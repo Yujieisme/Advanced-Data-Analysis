@@ -1,0 +1,33 @@
+title "Sashelp.bmt --- Bone Marrow Transplant Patients";
+proc contents data=sashelp.bmt.varnum;
+ods select position;
+run;
+ods graphics on;
+proc lifetest data=Sashelp.BMT nelson plots=(survival(atrisk));
+time T*Status(0);
+strata Group;
+run;
+ods graphics off;
+
+proc format;
+value sex 1='female'
+          0='male';
+data cad0101;
+infile 'C:\Users\y.sun4\Downloads\CAD.txt' DLM='09'x;
+input gender choleste;
+format gender sex.;
+proc surveyselect data=cad0101 out=sample_SYS_c sampsize=600 seed=94423 method=SYS;
+control gender;
+run;
+proc print data=sample_SYS_c;
+run;
+proc anova data=sample_SYS_c plots;
+class gender;
+model choleste=gender;
+means gender;
+run;
+proc anova data=cad0101 plots;
+class gender;
+model choleste=gender;
+means gender;
+run;
